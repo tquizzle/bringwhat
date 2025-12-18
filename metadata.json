@@ -1,0 +1,5 @@
+{
+  "name": "BringWhat",
+  "description": "A simple, mobile-first potluck coordinator. Create an event, share the link via iMessage, and let friends add what they're bringing. Features AI-powered suggestions for what to bring.",
+  "requestFramePermissions": []
+}

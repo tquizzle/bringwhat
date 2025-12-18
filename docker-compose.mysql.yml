@@ -1,0 +1,32 @@
+services:
+  bringwhat:
+    build: .
+    container_name: bringwhat_mysql
+    ports:
+      - "${PORT}:3000"
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    environment:
+      MYSQL_DATABASE: bringwhat
+      MYSQL_USER: bringwhat
+      MYSQL_PASSWORD: bringwhat
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+    restart: unless-stopped
+
+volumes:
+  mysql_data:

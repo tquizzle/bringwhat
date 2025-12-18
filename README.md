@@ -1,0 +1,129 @@
+# BringWhat 🥘
+
+**BringWhat** is a simple, mobile-first web application designed to coordinate potlucks and parties. It allows hosts to create events and share a link via iMessage (or any platform), enabling guests to sign up for items without creating an account.
+
+## 🚀 Features
+
+*   **Zero Friction**: No login or account creation required for guests.
+*   **Mobile First**: Designed to feel native on mobile browsers.
+*   **AI Powered**: Uses Google Gemini to suggest missing party items based on the event description and current list.
+*   **Self-Hostable**: Simple Docker setup with SQLite backend.
+*   **Persistent**: Data is saved to a local SQLite database file.
+
+## 🛠 Architecture
+
+The application follows a **Monolithic** architecture optimized for portability and ease of self-hosting.
+
+### Frontend
+*   **Framework**: React 18 with TypeScript.
+*   **Build Tool**: Vite for fast bundling.
+*   **Styling**: Tailwind CSS for utility-first, responsive design.
+*   **State**: Local React state management (Context not required for this complexity).
+
+### Backend
+*   **Runtime**: Node.js 20.
+*   **Server**: Express.js.
+*   **Database**: SQLite (default), MySQL, or PostgreSQL.
+    *   *Flexible*: Choose the database that fits your infrastructure. SQLite for simple files, MySQL/Postgres for robust production setups.
+*   **API**: RESTful endpoints for creating events and items.
+
+### Docker Strategy
+*   **Multi-Stage Build**: The Dockerfile uses a 2-stage process.
+    1.  **Builder**: Installs dev dependencies and compiles the React app into static assets (`/dist`).
+    2.  **Runner**: Installs only production dependencies, copies the Node.js server and the compiled static assets.
+*   **Volume Mapping**: The container expects a volume mounted at `/app/data` to persist the SQLite database file (`bringwhat.db`).
+
+## 🐳 Running with Docker Compose
+
+This is the recommended way to run the application.
+
+1.  **Create a `data` directory** (optional, docker will create it, but good practice):
+    ```bash
+    mkdir data
+    ```
+
+2.  **Run the container**:
+    
+    **SQLite (Default)**:
+    ```bash
+    docker compose up --build -d
+    ```
+
+    **MySQL**:
+    ```bash
+    docker compose -f docker-compose.mysql.yml up --build -d
+    ```
+
+    **PostgreSQL**:
+    ```bash
+    docker compose -f docker-compose.postgres.yml up --build -d
+    ```
+
+3.  **Access the app**:
+    Open your browser to `http://localhost:3000`.
+
+### Configuration (Environment Variables)
+
+You can set these in your `docker-compose.yml` or a `.env` file:
+
+*   `API_KEY`: (Optional) Your Google Gemini API Key. Required if you want the "Party Assistant" AI suggestions to work.
+*   `PORT`: Port to listen on (Internal container port, default 3000).
+
+### Database Options
+*   `DB_TYPE`: `sqlite`, `mysql`, or `postgres`.
+*   `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASS`, `DB_NAME`: Required if using MySQL or Postgres.
+*   `DATABASE_URL`: Connection string alternative for Postgres/MySQL.
+
+## 🔄 Updating & Rebuilding
+
+If you make changes to the code, you need to rebuild the Docker image to see them. Run:
+
+```bash
+docker-compose up --build -d
+```
+
+This will:
+1.  Stop the current container.
+2.  Rebuild the image with your new code.
+3.  Start the new container (keeping your database intact).
+
+## 💻 Local Development
+
+If you want to modify the code:
+
+1.  **Install Dependencies**:
+    ```bash
+    pnpm install
+    # or
+    npm install
+    ```
+
+2.  **Start Development Server**:
+    ```bash
+    npm run dev
+    ```
+    *   This starts Vite for the frontend.
+    *   *Note*: The frontend proxy in `vite.config.ts` points to `localhost:3000`. You need to run the backend separately for API calls to work.
+
+3.  **Start Backend (in a separate terminal)**:
+    ```bash
+    npm run start
+    ```
+
+## 📂 Project Structure
+
+```
+├── components/       # Reusable UI components (Buttons, Inputs, Modals)
+├── services/         # API integration (Storage, Gemini AI)
+├── types.ts          # TypeScript interfaces
+├── App.tsx           # Main application logic & Routing
+├── server.js         # Node.js + Express + SQLite Backend
+├── Dockerfile        # Production container definition
+└── docker-compose.yml # Orchestration config
+```
+
+## 🔒 Data Persistence
+
+When running via Docker, your data is stored in the `./data/bringwhat.db` file on your host machine. 
+*   **Backup**: Simply copy this file.
+*   **Restore**: Replace this file (while the container is stopped).

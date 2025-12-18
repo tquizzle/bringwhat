@@ -1,0 +1,22 @@
+services:
+  bringwhat:
+    build: .
+    container_name: bringwhat
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - API_KEY=${API_KEY}
+      
+      # Database Configuration
+      # Options: 'sqlite' or 'postgres'
+      - DB_TYPE=${DB_TYPE:-sqlite}
+      
+      # SQLite Config
+      - DB_PATH=/app/data/bringwhat.db
+      
+      # Postgres Config (Example)
+      # - DATABASE_URL=postgresql://user:password@host:5432/bringwhat
+      
+    restart: unless-stopped
