@@ -28,9 +28,8 @@ The application follows a **Monolithic** architecture optimized for portability 
 *   **API**: RESTful endpoints for creating events and items.
 
 ### Docker Strategy
-*   **Multi-Stage Build**: The Dockerfile uses a 2-stage process.
-    1.  **Builder**: Installs dev dependencies and compiles the React app into static assets (`/dist`).
-    2.  **Runner**: Installs only production dependencies, copies the Node.js server and the compiled static assets.
+*   **Single-Stage Build**: The Dockerfile uses a single-stage process (`FROM node:20`) to ensure build tools are available and environment consistency.
+    *   **Failsafe Install**: It performs a "clean install" by deleting any `node_modules` copied from the host before running `pnpm install`, preventing architecture mismatches.
 *   **Volume Mapping**: The container expects a volume mounted at `/app/data` to persist the SQLite database file (`bringwhat.db`).
 
 ## 🐳 Running with Docker Compose
