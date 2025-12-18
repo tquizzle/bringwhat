@@ -32,31 +32,37 @@ The application follows a **Monolithic** architecture optimized for portability 
     *   **Failsafe Install**: It performs a "clean install" by deleting any `node_modules` copied from the host before running `pnpm install`, preventing architecture mismatches.
 *   **Volume Mapping**: The container expects a volume mounted at `/app/data` to persist the SQLite database file (`bringwhat.db`).
 
-## 🐳 Running with Docker Compose
+## 🐳 Running with Docker
 
-This is the recommended way to run the application.
+### Option A: Pre-built Image (Docker Hub)
+The easiest way to run BringWhat is using the official image: `tquinnelly/bringwhat:latest`.
 
-1.  **Create a `data` directory** (optional, docker will create it, but good practice):
-    ```bash
-    mkdir data
-    ```
+**Run with SQLite (Quick Start)**:
+```bash
+docker run -d \
+  -p 3000:3000 \
+  -v $(pwd)/data:/app/data \
+  --name bringwhat \
+  tquinnelly/bringwhat:latest
+```
 
-2.  **Run the container**:
-    
-    **SQLite (Default)**:
-    ```bash
-    docker compose up --build -d
-    ```
+### Option B: Docker Compose (Recommended)
+Clone the repo and use one of the provided compose files.
 
-    **MySQL**:
-    ```bash
-    docker compose -f docker-compose.mysql.yml up --build -d
-    ```
+**SQLite (Default)**:
+```bash
+docker compose up -d
+```
 
-    **PostgreSQL**:
-    ```bash
-    docker compose -f docker-compose.postgres.yml up --build -d
-    ```
+**MySQL**:
+```bash
+docker compose -f docker-compose.mysql.yml up -d
+```
+
+**PostgreSQL**:
+```bash
+docker compose -f docker-compose.postgres.yml up -d
+```
 
 3.  **Access the app**:
     Open your browser to `http://localhost:3000`.
@@ -123,6 +129,12 @@ If you want to modify the code:
 
 ## 🔒 Data Persistence
 
-When running via Docker, your data is stored in the `./data/bringwhat.db` file on your host machine. 
-*   **Backup**: Simply copy this file.
+### SQLite
+Data is stored in the `./data/bringwhat.db` file on your host machine (mapped to `/app/data` in the container).
+*   **Backup**: Simply copy/snapshot this file.
 *   **Restore**: Replace this file (while the container is stopped).
+
+### MySQL / PostgreSQL
+Data is stored in a Docker **named volume** (`mysql_data` or `postgres_data`) managed by Docker.
+*   **Persistence**: Data survives container restarts and removals.
+*   **Backup**: Use standard `mysqldump` or `pg_dump` tools against the running database container.
