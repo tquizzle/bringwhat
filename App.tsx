@@ -56,7 +56,7 @@ const Footer: React.FC = () => {
           Made with ❤️ by TQ for simple gatherings.
         </p>
         <div className="flex space-x-6 text-sm font-medium">
-          <a href="https://bringwhat.dev" className="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+          <a href="https://bringwhat.app" className="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
             Website
           </a>
           <a href="https://github.com/tquizzle/bringwhat" className="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
