@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Event, Item, Suggestion, ViewState } from './types';
 import { StorageService } from './services/storage';
-import { GeminiService } from './services/gemini';
+import { AIService } from './services/ai';
 import { Button } from './components/Button';
 import { Input } from './components/Input';
 import { Modal } from './components/Modal';
@@ -256,7 +256,7 @@ const EventView: React.FC<{
     if (!event) return;
     setLoadingSuggestions(true);
     setShowSuggestions(true);
-    const results = await GeminiService.getSuggestions(event, items);
+    const results = await AIService.getSuggestions(event, items);
     setSuggestions(results);
     setLoadingSuggestions(false);
   };

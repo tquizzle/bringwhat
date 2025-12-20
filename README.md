@@ -67,6 +67,15 @@ docker compose -f docker-compose.postgres.yml up -d
 3.  **Access the app**:
     Open your browser to `http://localhost:3000`.
 
+### AI Configuration (Optional)
+This app supports **Google Gemini** (default) or **OpenAI-compatible** providers (like Ollama, LocalAI).
+
+*   `API_KEY`: Your API Key (Gemini or OpenAI).
+*   `AI_PROVIDER`: `gemini` (default) or `openai`.
+*   `AI_BASE_URL`: Base URL for OpenAI compatible APIs.
+    *   *Example for Ollama*: `http://localhost:11434/v1`
+*   `AI_MODEL`: Specific model to use (e.g., `gpt-4o`, `llama3`).
+
 ### Configuration (Environment Variables)
 
 You can set these in your `docker-compose.yml` or a `.env` file:
@@ -120,9 +129,10 @@ If you want to modify the code:
 ```
 ├── components/       # Reusable UI components (Buttons, Inputs, Modals)
 ├── services/         # API integration (Storage, Gemini AI)
+├── public/           # Static assets (Favicons, Logos)
 ├── types.ts          # TypeScript interfaces
 ├── App.tsx           # Main application logic & Routing
-├── server.js         # Node.js + Express + SQLite Backend
+├── server.js         # Node.js + Express + Backend Logic
 ├── Dockerfile        # Production container definition
 └── docker-compose.yml # Orchestration config
 ```

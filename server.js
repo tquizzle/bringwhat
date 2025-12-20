@@ -1,4 +1,5 @@
 import express from 'express';
+import { GoogleGenAI, Type } from "@google/genai";
 import Database from 'better-sqlite3';
 import pg from 'pg';
 import mysql from 'mysql2/promise'; // Using promise wrapper
@@ -279,15 +280,120 @@ app.post('/api/items', async (req, res) => {
   }
 });
 
+// --- AI Logic ---
+app.post('/api/suggest', async (req, res) => {
+  const { event, items } = req.body;
+  const apiKey = process.env.API_KEY || '';
+  const provider = process.env.AI_PROVIDER || 'gemini';
+  const baseUrl = process.env.AI_BASE_URL;
+  const customModel = process.env.AI_MODEL;
+
+  if (!apiKey && provider === 'gemini') {
+    return res.json([
+      { itemName: "Ice", reason: "AI features require an API Key." },
+      { itemName: "Cups", reason: "Standard party necessity." }
+    ]);
+  }
+
+  const systemPrompt = `
+    You are a party planning assistant.
+    Event Title: "${event.title}"
+    Description: "${event.description}"
+    Host: ${event.hostName}
+    
+    Current Items:
+    ${items.length === 0 ? "No items yet." : items.map(i => `- ${i.itemName} (${i.guestName})`).join('\n')}
+    
+    Suggest 3 distinct items that are missing.
+    Return ONLY a raw JSON array. Do not include markdown formatting like \`\`\`json.
+    Format: [{"itemName": "...", "reason": "..."}]
+    Keep reasons under 10 words.
+  `;
+
+  try {
+    if (provider === 'openai') {
+      const url = baseUrl || 'https://api.openai.com/v1';
+      const model = customModel || 'gpt-4o-mini';
+      const targetUrl = `${url.replace(/\/$/, '')}/chat/completions`;
+
+      console.log(`[AI] Using Provider: OpenAI-compat`);
+      console.log(`[AI] URL: ${targetUrl}`);
+      console.log(`[AI] Model: ${model}`);
+
+      const aiRes = await fetch(targetUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model: model,
+          messages: [{ role: 'user', content: systemPrompt }],
+          temperature: 0.7
+        })
+      });
+
+      if (!aiRes.ok) {
+        const errText = await aiRes.text();
+        console.error(`[AI] Error Response: ${errText}`);
+        throw new Error(`OpenAI Error: ${aiRes.status} ${aiRes.statusText}`);
+      }
+
+      const data = await aiRes.json();
+      let content = data.choices[0]?.message?.content || '[]';
+      content = content.replace(/```json/g, '').replace(/```/g, '').trim();
+      res.json(JSON.parse(content));
+
+    } else {
+      // Gemini
+      const ai = new GoogleGenAI({ apiKey });
+      const modelName = customModel || 'gemini-2.5-flash';
+
+      const response = await ai.models.generateContent({
+        model: modelName,
+        contents: systemPrompt,
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                itemName: { type: Type.STRING },
+                reason: { type: Type.STRING }
+              },
+              required: ['itemName', 'reason']
+            }
+          }
+        }
+      });
+      const text = response.text;
+      res.json(text ? JSON.parse(text) : []);
+    }
+  } catch (error) {
+    console.error("AI Error:", error);
+    res.json([
+      { itemName: "Napkins", reason: "Always useful." },
+      { itemName: "Snacks", reason: "Backup plan." }
+    ]);
+  }
+});
+
 // Catch-all for client-side routing
 app.get('*', (req, res) => {
   res.sendFile(join(__dirname, 'dist', 'index.html'));
 });
 
-app.listen(PORT, () => {
-  console.log(`\n--- BringWhat Server ---`);
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Database Type: ${DB_TYPE}`);
-  console.log(`Gemini API Key: ${process.env.API_KEY ? 'Provided (***)' : 'Not Provided'}`);
-  console.log(`------------------------\n`);
+// Initialize DB and then start server
+db.init().then(() => {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`\n--- BringWhat Server ---`);
+    console.log(`Server running on port ${PORT}`);
+    console.log(`Database Type: ${DB_TYPE}`);
+    console.log(`Gemini API Key: ${process.env.API_KEY ? 'Provided (***)' : 'Not Provided'}`);
+    console.log(`------------------------\n`);
+  });
+}).catch(err => {
+  console.error("Failed to initialize database:", err);
+  process.exit(1);
 });
