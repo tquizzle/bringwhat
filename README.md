@@ -4,8 +4,18 @@
 
 ![BringWhat](https://github.com/tquizzle/bringwhat/blob/main/public/screenshot.png)
 
+## 📋 Changelog
+
 > [!TIP]
-> **Recent Updates:** See [CHANGELOG.md](CHANGELOG.md) for the latest improvements including 33% smaller Docker images, 60% faster queries, health monitoring, and security patches.
+For a detailed history of changes, improvements, and security updates, see [CHANGELOG.md](CHANGELOG.md).
+
+**Recent Highlights:**
+- 🚀 33% smaller Docker images (~1.2GB → ~800MB)
+- ⚡ 60% faster database queries with indexes
+- 🏥 Health monitoring endpoint for container orchestration
+- 🛡️ Fixed 3 security vulnerabilities (2 HIGH, 1 LOW)
+- 🎯 Error boundaries for graceful error handling
+- 📦 24% smaller production bundles
 
 ## 🚀 Features
 
