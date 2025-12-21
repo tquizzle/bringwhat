@@ -54,4 +54,4 @@ jobs:
 #          tags: ${{ needs.extract-metadata.outputs.latest_tags }}
           tags: ${{ secrets.DOCKER_USERNAME }}/bringwhat:latest
           labels: ${{ needs.extract-metadata.outputs.latest_labels }}
-          platform: linux/amd64,linux/arm64
+          platforms: linux/amd64,linux/arm64
