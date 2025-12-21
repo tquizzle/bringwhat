@@ -11,7 +11,7 @@
 
 *   **Zero Friction**: No login or account creation required for guests.
 *   **Mobile First**: Designed to feel native on mobile browsers.
-*   **AI Powered**: Uses Google Gemini to suggest missing party items based on the event description and current list.
+*   **AI Powered**: Uses Google Gemini or OpenAI-compatible providers (Ollama, LocalAI) to suggest missing party items based on the event description and current list.
 *   **Self-Hostable**: Simple Docker setup with SQLite backend.
 *   **Persistent**: Data is saved to a local SQLite database file.
 *   **Production Optimized**: Multi-stage Docker build, health checks, and error boundaries.
