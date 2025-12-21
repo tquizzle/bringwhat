@@ -2,6 +2,8 @@
 
 **BringWhat** is a simple, mobile-first web application designed to coordinate potlucks and parties. It allows hosts to create events and share a link via iMessage (or any platform), enabling guests to sign up for items without creating an account.
 
+![BringWhat](https://github.com/tquizzle/bringwhat/blob/main/public/screenshot.png)
+
 ## 🚀 Features
 
 *   **Zero Friction**: No login or account creation required for guests.
@@ -29,7 +31,6 @@ The application follows a **Monolithic** architecture optimized for portability 
 
 ### Docker Strategy
 *   **Single-Stage Build**: The Dockerfile uses a single-stage process (`FROM node:20`) to ensure build tools are available and environment consistency.
-    *   **Failsafe Install**: It performs a "clean install" by deleting any `node_modules` copied from the host before running `pnpm install`, preventing architecture mismatches.
 *   **Volume Mapping**: The container expects a volume mounted at `/app/data` to persist the SQLite database file (`bringwhat.db`).
 
 ## 🐳 Running with Docker
@@ -80,7 +81,7 @@ This app supports **Google Gemini** (default) or **OpenAI-compatible** providers
 
 You can set these in your `docker-compose.yml` or a `.env` file:
 
-*   `API_KEY`: (Optional) Your Google Gemini API Key. Required if you want the "Party Assistant" AI suggestions to work.
+*   `API_KEY`: (Optional) Your Google Gemini/OpenAI API Key. Required if you want the "Party Assistant" AI suggestions to work.
 *   `PORT`: Port to listen on (Internal container port, default 3000).
 
 ### Database Options
@@ -127,14 +128,21 @@ If you want to modify the code:
 ## 📂 Project Structure
 
 ```
-├── components/       # Reusable UI components (Buttons, Inputs, Modals)
-├── services/         # API integration (Storage, Gemini AI)
-├── public/           # Static assets (Favicons, Logos)
-├── types.ts          # TypeScript interfaces
-├── App.tsx           # Main application logic & Routing
-├── server.js         # Node.js + Express + Backend Logic
-├── Dockerfile        # Production container definition
-└── docker-compose.yml # Orchestration config
+├── components/                 # Reusable UI components (Buttons, Inputs, Modals)
+├── services/                   # API integration (Storage, Gemini AI)
+├── public/                     # Static assets (Favicons, Logos)
+├── data/                       # SQLite database storage
+├── types.ts                    # TypeScript interfaces
+├── App.tsx                     # Main application logic & Routing
+├── index.tsx                   # Entry point
+├── index.css                   # Global styles
+├── server.js                   # Node.js + Express + Backend Logic
+├── Dockerfile                  # Production container definition
+├── docker-compose.yml          # SQLite orchestration config (Default)
+├── docker-compose.mysql.yml    # MySQL orchestration config
+├── docker-compose.postgres.yml # PostgreSQL orchestration config
+├── vite.config.ts              # Vite configuration
+└── tailwind.config.js          # Tailwind configuration
 ```
 
 ## 🔒 Data Persistence
