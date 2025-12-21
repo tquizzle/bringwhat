@@ -4,6 +4,20 @@
 
 ![BringWhat](https://github.com/tquizzle/bringwhat/blob/main/public/screenshot.png)
 
+## 📑 Table of Contents
+
+- [Features](#-features)
+- [Architecture](#-architecture)
+- [Running with Docker](#-running-with-docker)
+- [Health Monitoring](#-health-monitoring)
+- [Updating & Rebuilding](#-updating--rebuilding)
+- [Local Development](#-local-development)
+- [Project Structure](#-project-structure)
+- [Data Persistence](#-data-persistence)
+- [Performance & Optimizations](#-performance--optimizations)
+- [Changelog](#-changelog)
+- [License](#-license)
+
 > [!TIP]
 > **Recent Updates:** See [CHANGELOG.md](CHANGELOG.md) for the latest improvements including 33% smaller Docker images, 60% faster queries, health monitoring, and security patches.
 
