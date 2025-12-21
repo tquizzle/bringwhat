@@ -51,6 +51,7 @@ The application follows a **Monolithic** architecture optimized for portability 
 ### Docker Strategy
 *   **Multi-Stage Build**: Optimized Dockerfile with separate build and production stages for minimal image size (~800MB).
 *   **Alpine Linux**: Uses lightweight Alpine base image for security and efficiency.
+*   **Multi-Platform**: Docker images built for both `linux/amd64` and `linux/arm64` architectures.
 *   **Health Checks**: Built-in `/health` endpoint for container orchestration and monitoring.
 *   **Volume Mapping**: The container expects a volume mounted at `/app/data` to persist the SQLite database file (`bringwhat.db`).
 
@@ -71,9 +72,16 @@ docker run -d \
 ### Option B: Docker Compose (Recommended)
 Clone the repo and use one of the provided compose files.
 
-**SQLite (Default)**:
+**SQLite with Pre-built Image (Default - Fastest)**:
 ```bash
+# Uses official image from Docker Hub
 docker compose up -d
+```
+
+**SQLite with Local Build (For Development)**:
+```bash
+# Builds from local source code
+docker compose -f docker-compose.local.yml up -d
 ```
 
 **MySQL**:
@@ -85,6 +93,9 @@ docker compose -f docker-compose.mysql.yml up -d
 ```bash
 docker compose -f docker-compose.postgres.yml up -d
 ```
+
+> [!NOTE]
+> The default `docker-compose.yml` uses the pre-built image from Docker Hub for faster startup. Use `docker-compose.local.yml` if you want to build from source or make local modifications.
 
 3.  **Access the app**:
     Open your browser to `http://localhost:3000`.
@@ -134,10 +145,19 @@ This endpoint is used by Docker health checks and can be integrated with monitor
 
 ## 🔄 Updating & Rebuilding
 
-If you make changes to the code, you need to rebuild the Docker image to see them. Run:
+### Using Pre-built Image (docker-compose.yml)
+The default setup pulls the latest image from Docker Hub. To update:
 
 ```bash
-docker-compose up --build -d
+docker compose pull
+docker compose up -d
+```
+
+### Using Local Build (docker-compose.local.yml)
+If you make changes to the code locally, rebuild with:
+
+```bash
+docker compose -f docker-compose.local.yml up --build -d
 ```
 
 This will:
@@ -181,7 +201,8 @@ If you want to modify the code:
 ├── index.css                   # Global styles
 ├── server.js                   # Node.js + Express + Backend Logic
 ├── Dockerfile                  # Multi-stage production build
-├── docker-compose.yml          # SQLite orchestration config (Default)
+├── docker-compose.yml          # Docker Hub image config (Default)
+├── docker-compose.local.yml    # Local build config (Development)
 ├── docker-compose.mysql.yml    # MySQL orchestration config
 ├── docker-compose.postgres.yml # PostgreSQL orchestration config
 ├── vite.config.ts              # Vite configuration with optimizations
