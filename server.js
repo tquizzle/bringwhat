@@ -14,6 +14,25 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const DB_TYPE = process.env.DB_TYPE || 'sqlite'; // 'sqlite', 'postgres', 'mysql'
 
+// Validate environment variables
+function validateEnv() {
+  if (DB_TYPE === 'mysql') {
+    if (!process.env.DB_HOST && !process.env.DATABASE_URL) {
+      console.error('ERROR: DB_HOST or DATABASE_URL required for MySQL');
+      process.exit(1);
+    }
+  }
+  if (DB_TYPE === 'postgres') {
+    if (!process.env.DB_HOST && !process.env.DATABASE_URL) {
+      console.error('ERROR: DB_HOST or DATABASE_URL required for PostgreSQL');
+      process.exit(1);
+    }
+  }
+  console.log('✓ Environment variables validated');
+}
+
+validateEnv();
+
 // Middleware
 app.use(express.json());
 app.use(express.static(join(__dirname, 'dist')));
@@ -121,7 +140,11 @@ class DbAdapter {
         category TEXT,
         createdAt BIGINT,
         FOREIGN KEY(eventId) REFERENCES events(id) ON DELETE CASCADE
-      )`
+      )`,
+      // Add indexes for better query performance
+      `CREATE INDEX IF NOT EXISTS idx_items_eventId ON items(eventId)`,
+      `CREATE INDEX IF NOT EXISTS idx_events_createdAt ON events(createdAt)`,
+      `CREATE INDEX IF NOT EXISTS idx_items_createdAt ON items(createdAt)`
     ];
     // Note: Added ON DELETE CASCADE to items for better cleanup, valid in all 3 usually.
     // Changed INTEGER to BIGINT for createdAt to be safe with JS timestamps (though standard INTEGER often works)
@@ -216,6 +239,31 @@ db.init();
 const generateId = () => Math.random().toString(36).substring(2, 9);
 
 // --- API Routes ---
+
+// Health Check Endpoint
+app.get('/health', async (req, res) => {
+  try {
+    // Quick DB check
+    if (db.type === 'postgres') {
+      await db.pool.query('SELECT 1');
+    } else if (db.type === 'mysql') {
+      await db.mysqlPool.query('SELECT 1');
+    } else {
+      db.sqliteDb.prepare('SELECT 1').get();
+    }
+    res.json({
+      status: 'healthy',
+      database: DB_TYPE,
+      timestamp: new Date().toISOString()
+    });
+  } catch (e) {
+    res.status(503).json({
+      status: 'unhealthy',
+      error: e.message,
+      database: DB_TYPE
+    });
+  }
+});
 
 // Create Event
 app.post('/api/events', async (req, res) => {
