@@ -54,4 +54,3 @@ jobs:
 #          tags: ${{ needs.extract-metadata.outputs.latest_tags }}
           tags: ${{ secrets.DOCKER_USERNAME }}/bringwhat:latest
           labels: ${{ needs.extract-metadata.outputs.latest_labels }}
-
