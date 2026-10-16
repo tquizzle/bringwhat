@@ -12,6 +12,8 @@ node_modules
 dist
 dist-ssr
 *.local
+.dev.vars
+.wrangler/
 data/**
 
 # Editor directories and files

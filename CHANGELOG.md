@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Breaking Changes
+- **Migrated to Cloudflare Workers with D1 and KV** - The app no longer runs in Docker or on Express
+  - D1 (SQLite) is the only database. Postgres, MySQL, and on-disk SQLite support were removed
+  - The Worker serves the Vite `dist/` build as static assets with SPA fallback
+  - KV caches AI suggestions and rate-limits `/api/suggest`
+  - Existing Postgres, MySQL, or SQLite data is not migrated automatically
+- **Removed Docker support** - `Dockerfile`, `.dockerignore`, and all `docker-compose*.yml` files were deleted
+  - Docker Hub image publishing and the Trivy security scan workflows were removed
+- **Removed server.js and Express** - API routes are now implemented in `src/worker.ts` with Hono
+- **Environment configuration** - `.env.example` was renamed to `.dev.vars.example`
+  - Local secrets go in `.dev.vars`. Production secrets use `wrangler secret put API_KEY`
+  - `DB_TYPE`, `DB_PATH`, `DATABASE_URL`, and `DB_*` variables were removed
+- **Deployment** - Added `.github/workflows/deploy.yml` with a typecheck and build check on pull requests and pushes, and a Cloudflare deploy on pushes to `main`
+  - Requires the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` repository secrets
+
 ### Added
 - **Health Check Endpoint** - Added `/health` endpoint for container monitoring and orchestration
   - Returns database status and timestamp
@@ -106,7 +121,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 | Bundle Size | ~250KB | ~190KB | -24% |
 | Query Speed (100 items) | ~50ms | ~20ms | -60% |
 | Security Vulnerabilities | 3 | 0 | -100% |
-| Health Monitoring | ❌ | ✅ | New |
+| Health Monitoring | No | Yes | New |
 | Error Handling | Basic | Graceful | Improved |
 
 ---
