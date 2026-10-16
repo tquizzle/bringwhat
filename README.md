@@ -45,7 +45,7 @@
 
 ## Cloudflare Setup
 
-Prerequisites: a Cloudflare account, Node.js 20, and pnpm.
+Prerequisites: a Cloudflare account, Node.js 22, and pnpm.
 
 1.  **Install dependencies**:
     ```bash
