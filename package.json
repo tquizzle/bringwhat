@@ -2,20 +2,20 @@
   "name": "bringwhat",
   "version": "1.0.0",
   "type": "module",
+  "packageManager": "pnpm@12.4.1",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "start": "node server.js"
+    "dev:worker": "wrangler dev",
+    "deploy": "pnpm build && wrangler deploy",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "express": "^5.0.0",
-    "better-sqlite3": "^12.5.0",
-    "pg": "^8.11.3",
-    "mysql2": "^3.6.5",
-    "@google/genai": "^1.34.0"
+    "hono": "^4.13.13"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261015.1",
     "@types/node": "^20.10.0",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
@@ -27,6 +27,7 @@
     "tailwindcss": "^3.4.0",
     "terser": "^5.36.0",
     "typescript": "^5.2.2",
-    "vite": "^5.0.8"
+    "vite": "^5.0.8",
+    "wrangler": "^4.151.0"
   }
 }

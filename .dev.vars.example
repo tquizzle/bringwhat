@@ -1,0 +1,16 @@
+# Copy to .dev.vars for local development with `pnpm dev:worker` (wrangler dev).
+# .dev.vars is git-ignored and must never be committed.
+# Production secrets are set with: pnpm exec wrangler secret put API_KEY
+
+# Gemini API key (optional; enables AI suggestions)
+API_KEY=
+
+# Provider: gemini (default) or openai (any OpenAI-compatible API)
+AI_PROVIDER=gemini
+
+# OpenAI-compatible base URL, only used when AI_PROVIDER=openai
+# e.g. http://localhost:11434/v1 for Ollama
+AI_BASE_URL=
+
+# Model name, e.g. gpt-4o-mini or llama3
+AI_MODEL=
