@@ -13,14 +13,14 @@
     {
       "binding": "DB",
       "database_name": "bringwhat",
-      "database_id": "REPLACE_WITH_D1_ID",
+      "database_id": "d9e8832a-7610-48db-99ed-e61f83a883e8",
       "migrations_dir": "migrations"
     }
   ],
   "kv_namespaces": [
     {
       "binding": "CACHE",
-      "id": "REPLACE_WITH_KV_ID"
+      "id": "bbca4afb431a489f9b12ff114ae3af45"
     }
   ],
   "vars": {
