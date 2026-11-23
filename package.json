@@ -2,7 +2,7 @@
   "name": "bringwhat",
   "version": "1.0.0",
   "type": "module",
-  "packageManager": "pnpm@12.21.0",
+  "packageManager": "pnpm@12.22.0",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
